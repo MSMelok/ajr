@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>أجر</title>
+    <meta name="description" content="منصة دعوية تحتوي على حاسبة للعمر في العبادة وأجر لأذكار مستمدة من أحاديث صحيحة.">
+    <meta name="keywords" content="دعوة, ذكر, أذكار, أجر, نخلة في الجنة, حساب العبادة, إسلام, حديث, جنة">
+    <meta name="author" content="MelokMade Innovations">
+    <meta name="language" content="AR">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph for social sharing -->
+    <meta property="og:title" content="أجر">
+    <meta property="og:description" content="اكتشف عدد سنوات العبادة لديك وابدأ التسوق من سوق الجنة بالأذكار والأعمال الصالحة.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="ar_AR">
+    <meta property="og:image" content="./assets/images/og-image.png"> <!-- replace later -->
+    <meta property="og:url" content="https://your-website-url.com"> <!-- replace later -->
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./assets/images/favicon.ico"> <!-- replace later -->
+
+    <!-- Fonts and CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <div class="container">
+                <ul class="tab-list">
+                    <li class="tab-item">
+                        <button class="tab-button active" data-tab="prayer-calc">حاسبة وقت الصلاة</button>
+                    </li>
+                    <li class="tab-item">
+                        <button class="tab-button" data-tab="age-calc">حاسبة العمر الحقيقي</button>
+                    </li>
+                    <li class="tab-item">
+                        <button class="tab-button" data-tab="marketplace">سوق الجنة</button>
+                    </li>
+                    <li class="tab-item">
+                        <button class="tab-button" data-tab="starred">المفضلة ⭐</button>
+                    </li>
+                </ul>
+                <button class="theme-toggle" id="themeToggle">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Prayer Time Calculator Section -->
+            <section class="tab-content active" id="prayer-calc">
+                <div class="section-header">
+                    <h2 class="section-title">حاسبة وقت الصلاة والوضوء</h2>
+                    <p class="section-description">احسب الوقت الذي تقضيه في مناجاة الله يومياً</p>
+                </div>
+                
+                <div class="calculator-container">
+                    <div class="calculator-inputs">
+                        <div class="input-group">
+                            <label for="wuduTimeInput">وقت الوضوء لكل صلاة (دقيقة)</label>
+                            <input type="number" id="wuduTimeInput" min="1" max="30" value="5">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="fajrTimeInput">وقت صلاة الفجر (دقيقة)</label>
+                            <input type="number" id="fajrTimeInput" min="1" max="60" value="10">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="duhurTimeInput">وقت صلاة الظهر (دقيقة)</label>
+                            <input type="number" id="duhurTimeInput" min="1" max="60" value="15">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="asrTimeInput">وقت صلاة العصر (دقيقة)</label>
+                            <input type="number" id="asrTimeInput" min="1" max="60" value="15">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="maghribTimeInput">وقت صلاة المغرب (دقيقة)</label>
+                            <input type="number" id="maghribTimeInput" min="1" max="60" value="12">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="ishaTimeInput">وقت صلاة العشاء (دقيقة)</label>
+                            <input type="number" id="ishaTimeInput" min="1" max="60" value="15">
+                        </div>
+                        
+                        <button class="calculate-btn" id="prayerCalculateBtn">احسب وقت المناجاة</button>
+                    </div>
+                    
+                    <div class="prayer-results" id="prayerResults">
+                        <div class="result-message">
+                            <p class="result-intro">أعطاك الله 24 ساعة في اليوم وأمرك فقط أن تناجيه لمدة</p>
+                            <div class="result-number highlight" id="totalPrayerHours">--</div>
+                            <p class="result-label">ساعة في اليوم</p>
+                        </div>
+                        
+                        <button class="navigate-btn" id="goToAgeCalc">احسب عمرك الحقيقي</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Age Calculator Section -->
+            <section class="tab-content" id="age-calc">
+                <div class="section-header">
+                    <h2 class="section-title">حاسبة العمر الحقيقي</h2>
+                    <p class="section-description">احسب كم من الوقت متاح لك للعبادة في حياتك</p>
+                </div>
+                
+                <div class="calculator-container">
+                    <div class="calculator-inputs">
+                        <div class="input-group">
+                            <label for="ageInput">العمر المتوقع (سنة)</label>
+                            <input type="number" id="ageInput" min="14" max="150" value="70">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="sleepInput">ساعات النوم يومياً</label>
+                            <input type="number" id="sleepInput" min="1" max="24" value="8" step="0.5">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="bathroomInput">وقت الحمام يومياً (دقيقة)</label>
+                            <input type="number" id="bathroomInput" min="1" max="300" value="30">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="workInput">وقت العمل يومياً (ساعة)</label>
+                            <input type="number" id="workInput" min="0" max="24" value="8" step="0.5">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="eatingInput">وقت الأكل يومياً (دقيقة)</label>
+                            <input type="number" id="eatingInput" min="1" max="1440" value="120">
+                        </div>
+                        
+                        <button class="calculate-btn" id="calculateBtn">احسب الوقت المتاح</button>
+                    </div>
+                    
+                    <div class="calculator-results" id="calculatorResults">
+                        <div class="result-item">
+                            <div class="result-number" id="totalLifeYears">--</div>
+                            <div class="result-label">سنوات العمر بعد البلوغ</div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <div class="result-number" id="timeLostYears">--</div>
+                            <div class="result-label">سنوات مفقودة في الأعمال الدنيوية</div>
+                        </div>
+                        
+                        <div class="result-item highlight">
+                            <div class="result-number" id="worshipTimeYears">--</div>
+                            <div class="result-label">سنوات متاحة للعبادة والطاعة</div>
+                        </div>
+
+                        <button class="navigate-btn" id="goToAgeCalc">تصفح الاجور الان</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Marketplace Section -->
+            <section class="tab-content" id="marketplace">
+                <div class="section-header">
+                    <h2 class="section-title">سوق الجنة</h2>
+                    <p class="section-description">اكتشف الأعمال الصالحة وثوابها في الجنة</p>
+                </div>
+                
+                <div class="marketplace-grid" id="marketplaceGrid">
+                    <!-- Cards will be dynamically generated here -->
+                </div>
+            </section>
+
+            <!-- Starred Section -->
+            <section class="tab-content" id="starred">
+                <div class="section-header">
+                    <h2 class="section-title">المفضلة المحفوظة</h2>
+                    <p class="section-description">الأعمال الصالحة التي أضفتها إلى مفضلتك</p>
+                </div>
+                
+                <div class="starred-grid" id="starredGrid">
+                    <div class="empty-starred" id="emptyStarred">
+                        <div class="empty-icon">⭐</div>
+                        <h3>لا توجد مفضلة محفوظة</h3>
+                        <p>ابدأ بإضافة الأعمال الصالحة إلى مفضلتك من سوق الجنة</p>
+                        <button class="navigate-btn" onclick="window.tabSystem.switchTab('marketplace')">تصفح سوق الجنة</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">تفاصيل الثواب</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-thikr">
+                    <h4>الذكر المطلوب:</h4>
+                    <p id="modalThikr"></p>
+                </div>
+                <div class="modal-hadith">
+                    <h4>الحديث الشريف:</h4>
+                    <p id="modalHadith"></p>
+                </div>
+                <div class="modal-source">
+                    <h4>المصدر:</h4>
+                    <p id="modalSource"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./js/config.js"></script>
+    <script src="./js/main.js"></script>
+    <script src="./js/calculator.js"></script>
+    <script src="./js/prayer-calculator.js"></script>
+    <script src="./js/marketplace.js"></script>
+</body>
+</html>
