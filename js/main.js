@@ -1,246 +1,265 @@
-// Tab System
-class TabSystem {
+// Main application controller
+class AjrApp {
     constructor() {
-        this.tabButtons = document.querySelectorAll('.tab-button');
-        this.tabContents = document.querySelectorAll('.tab-content');
-        this.activeTab = 'prayer-calc';
+        this.currentTab = 'prayer-calc';
+        this.theme = 'light';
+        this.starredItems = [];
         
         this.init();
     }
     
     init() {
-        this.tabButtons.forEach(button => {
+        this.loadTheme();
+        this.loadStarredItems();
+        this.setupEventListeners();
+        
+        // Initialize Feather icons first
+        this.initializeFeatherIcons();
+        
+        // Initialize tab system
+        window.tabSystem = new TabSystem();
+        
+        // Initialize calculators
+        window.prayerCalculator = new PrayerCalculator();
+        window.ageCalculator = new AgeCalculator();
+        
+        // Initialize marketplace
+        window.marketplace = new Marketplace();
+        
+        console.log('Ajr App initialized successfully');
+    }
+    
+    setupEventListeners() {
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.toggleTheme();
+            });
+        }
+        
+        // Hero CTA buttons
+        const ctaButtons = document.querySelectorAll('.cta-btn[data-tab]');
+        ctaButtons.forEach(button => {
             button.addEventListener('click', (e) => {
-                const tabId = e.target.getAttribute('data-tab');
-                this.switchTab(tabId);
+                e.preventDefault();
+                e.stopPropagation();
+                const tab = e.currentTarget.getAttribute('data-tab');
+                if (window.tabSystem) {
+                    window.tabSystem.switchTab(tab);
+                }
+                return false;
             });
         });
-    }
-    
-    switchTab(tabId) {
-        // Remove active class from all tabs
-        this.tabButtons.forEach(btn => btn.classList.remove('active'));
-        this.tabContents.forEach(content => content.classList.remove('active'));
         
-        // Add active class to selected tab
-        const activeButton = document.querySelector(`[data-tab="${tabId}"]`);
-        const activeContent = document.getElementById(tabId);
+        // Navigation buttons
+        const goToAgeCalc = document.getElementById('goToAgeCalc');
+        if (goToAgeCalc) {
+            goToAgeCalc.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (window.tabSystem) {
+                    window.tabSystem.switchTab('age-calc');
+                }
+            });
+        }
         
-        if (activeButton && activeContent) {
-            activeButton.classList.add('active');
-            activeContent.classList.add('active');
-            this.activeTab = tabId;
-            
-            // Update starred tab when switching to it
-            if (tabId === 'starred' && window.marketplaceManager) {
-                window.marketplaceManager.renderStarredCards();
-            }
+        const goToMarketplace = document.getElementById('goToMarketplace');
+        if (goToMarketplace) {
+            goToMarketplace.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (window.tabSystem) {
+                    window.tabSystem.switchTab('marketplace');
+                }
+            });
         }
     }
-}
-
-// Main application controller
-class App {
-    constructor() {
-        this.themeToggle = document.getElementById('themeToggle');
-        this.themeIcon = document.querySelector('.theme-icon');
-        
-        this.init();
-    }
     
-    init() {
-        this.setupTheme();
-        this.setupScrollEffects();
-        this.setupAnimations();
-    }
-    
-    setupTheme() {
-        // Load theme from localStorage
-        const savedTheme = localStorage.getItem('theme') || 'light';
+    loadTheme() {
+        const savedTheme = localStorage.getItem('ajr-theme') || 'light';
         this.setTheme(savedTheme);
-        
-        // Theme toggle event
-        this.themeToggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            this.setTheme(newTheme);
-        });
     }
     
     setTheme(theme) {
+        this.theme = theme;
         document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
+        localStorage.setItem('ajr-theme', theme);
         
-        // Update theme icon
-        if (this.themeIcon) {
-            this.themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        // Update theme toggle icon
+        const themeIcon = document.querySelector('.theme-icon');
+        if (themeIcon) {
+            themeIcon.setAttribute('data-feather', theme === 'dark' ? 'sun' : 'moon');
+            // Refresh icons after setting the attribute
+            this.initializeFeatherIcons();
+        }
+    }
+    
+    toggleTheme() {
+        const newTheme = this.theme === 'light' ? 'dark' : 'light';
+        this.setTheme(newTheme);
+    }
+    
+    loadStarredItems() {
+        const saved = localStorage.getItem('ajr-starred-items');
+        this.starredItems = saved ? JSON.parse(saved) : [];
+        console.log('Loaded starred items:', this.starredItems);
+    }
+    
+    saveStarredItems() {
+        localStorage.setItem('ajr-starred-items', JSON.stringify(this.starredItems));
+    }
+    
+    toggleStarredItem(itemId) {
+        const index = this.starredItems.indexOf(itemId);
+        if (index > -1) {
+            this.starredItems.splice(index, 1);
+        } else {
+            this.starredItems.push(itemId);
+        }
+        this.saveStarredItems();
+        
+        // Update UI
+        if (window.marketplace) {
+            window.marketplace.updateStarredButtons();
+        }
+        if (window.tabSystem && window.tabSystem.currentTab === 'starred') {
+            window.marketplace.renderStarredItems();
+        }
+    }
+    
+    isItemStarred(itemId) {
+        return this.starredItems.includes(itemId);
+    }
+    
+    initializeFeatherIcons() {
+        const initIcons = () => {
+            if (window.feather) {
+                try {
+                    feather.replace();
+                    console.log('Feather icons initialized successfully');
+                } catch (error) {
+                    console.warn('Feather icons failed to load:', error);
+                }
+            }
+        };
+        
+        // Multiple initialization attempts for reliability
+        initIcons();
+        setTimeout(initIcons, 200);
+        setTimeout(initIcons, 500);
+        setTimeout(initIcons, 1000);
+    }
+}
+
+// Tab System
+class TabSystem {
+    constructor() {
+        this.currentTab = 'prayer-calc';
+        this.init();
+    }
+    
+    init() {
+        this.setupTabButtons();
+        this.showTab(this.currentTab);
+    }
+    
+    setupTabButtons() {
+        const tabButtons = document.querySelectorAll('.tab-button[data-tab]');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const tab = e.currentTarget.getAttribute('data-tab');
+                this.switchTab(tab);
+                return false;
+            });
+        });
+    }
+    
+    switchTab(tabName) {
+        if (this.currentTab === tabName) return;
+        
+        // Validate tab exists
+        const newTabContent = document.getElementById(tabName);
+        if (!newTabContent) {
+            console.warn(`Tab ${tabName} not found`);
+            return;
         }
         
-        // Add theme transition class
-        document.body.classList.add('theme-transition');
+        // Hide current tab with animation
+        const currentTabContent = document.getElementById(this.currentTab);
+        const currentTabButtons = document.querySelectorAll(`[data-tab="${this.currentTab}"]`);
+        
+        if (currentTabContent) {
+            currentTabContent.style.opacity = '0';
+            setTimeout(() => {
+                currentTabContent.classList.remove('active');
+                currentTabContent.style.opacity = '';
+            }, 150);
+        }
+        
+        currentTabButtons.forEach(button => {
+            button.classList.remove('active');
+        });
+        
+        // Show new tab with animation
+        const newTabButtons = document.querySelectorAll(`[data-tab="${tabName}"]`);
+        
         setTimeout(() => {
-            document.body.classList.remove('theme-transition');
+            newTabContent.classList.add('active');
+            newTabContent.style.opacity = '0';
+            setTimeout(() => {
+                newTabContent.style.opacity = '1';
+            }, 50);
+        }, 150);
+        
+        newTabButtons.forEach(button => {
+            button.classList.add('active');
+        });
+        
+        this.currentTab = tabName;
+        
+        // Special handling for marketplace and starred tabs
+        setTimeout(() => {
+            if (tabName === 'marketplace' && window.marketplace) {
+                window.marketplace.renderMarketplace();
+            } else if (tabName === 'starred' && window.marketplace) {
+                window.marketplace.renderStarredItems();
+            }
+        }, 200);
+        
+        // Scroll to top smoothly
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Re-initialize icons after tab switch
+        setTimeout(() => {
+            if (window.feather) {
+                feather.replace();
+            }
         }, 300);
     }
     
-    setupScrollEffects() {
-        // Smooth scrolling for internal links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-        
-        // Intersection Observer for fade-in animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('fade-in');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-        
-        // Observe sections for animations
-        document.querySelectorAll('.calculator-section, .marketplace-section').forEach(section => {
-            observer.observe(section);
-        });
-    }
-    
-    setupAnimations() {
-        // Add stagger animation to marketplace cards
-        const cards = document.querySelectorAll('.reward-card');
-        cards.forEach((card, index) => {
-            card.style.animationDelay = `${index * 0.1}s`;
-            card.classList.add('fade-in');
-        });
-        
-        // Header scroll behavior
-        let lastScrollTop = 0;
-        const header = document.querySelector('.header');
-        
-        window.addEventListener('scroll', () => {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            if (scrollTop > 100) { // Start hiding after 100px scroll
-                header.classList.add('scrolled');
-                
-                // Show header when scrolling up, hide when scrolling down
-                if (scrollTop < lastScrollTop) {
-                    header.classList.add('visible');
-                } else {
-                    header.classList.remove('visible');
-                }
-            } else {
-                // Show header normally when at top
-                header.classList.remove('scrolled', 'visible');
-            }
-            
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
-        });
-    }
-    
-    // Utility method to show notifications
-    showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.textContent = message;
-        
-        const styles = {
-            position: 'fixed',
-            top: '20px',
-            right: '20px',
-            padding: '1rem 1.5rem',
-            borderRadius: '8px',
-            color: 'white',
-            fontFamily: '"Tajawal", sans-serif',
-            fontSize: '0.9rem',
-            zIndex: '1002',
-            transform: 'translateX(100%)',
-            transition: 'transform 0.3s ease',
-            maxWidth: '300px',
-            wordWrap: 'break-word'
-        };
-        
-        const colors = {
-            info: '#17a2b8',
-            success: '#28a745',
-            warning: '#ffc107',
-            error: '#dc3545'
-        };
-        
-        Object.assign(notification.style, styles);
-        notification.style.backgroundColor = colors[type] || colors.info;
-        
-        document.body.appendChild(notification);
-        
-        // Animate in
-        setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 100);
-        
-        // Remove after 4 seconds
-        setTimeout(() => {
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
-        }, 4000);
-    }
-    
-    // Method to handle responsive behavior
-    handleResize() {
-        const isMobile = window.innerWidth <= 768;
-        document.body.classList.toggle('mobile-view', isMobile);
+    showTab(tabName) {
+        this.switchTab(tabName);
     }
 }
 
-// Initialize app when DOM is loaded
+// Initialize the app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    const app = new App();
-    window.tabSystem = new TabSystem(); // Make tab system globally accessible
-    
-    // Handle window resize
-    window.addEventListener('resize', () => app.handleResize());
-    app.handleResize(); // Initial call
-    
-    // Add loading complete class
-    document.body.classList.add('loaded');
+    window.ajrApp = new AjrApp();
+    console.log('App loaded successfully');
 });
 
-// Service Worker registration (optional for PWA features)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        // Service worker can be implemented later if needed
-        console.log('App loaded successfully');
-    });
-}
-
-// Global error handling
-window.addEventListener('error', (e) => {
-    console.error('Global error:', e.error);
-    // You can implement error reporting here
+// Handle window resize for responsive behavior
+window.addEventListener('resize', () => {
+    if (window.feather) {
+        feather.replace();
+    }
 });
 
-// Handle offline/online status
-window.addEventListener('online', () => {
-    document.body.classList.remove('offline');
-});
-
-window.addEventListener('offline', () => {
-    document.body.classList.add('offline');
+// Reinitialize icons when the page becomes visible (for better reliability)
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && window.feather) {
+        feather.replace();
+    }
 });

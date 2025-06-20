@@ -1,138 +1,196 @@
-// Prayer Time Calculator functionality
+// Prayer Calculator class
 class PrayerCalculator {
     constructor() {
-        this.wuduTimeInput = document.getElementById('wuduTimeInput');
-        this.fajrTimeInput = document.getElementById('fajrTimeInput');
-        this.duhurTimeInput = document.getElementById('duhurTimeInput');
-        this.asrTimeInput = document.getElementById('asrTimeInput');
-        this.maghribTimeInput = document.getElementById('maghribTimeInput');
-        this.ishaTimeInput = document.getElementById('ishaTimeInput');
-        this.calculateBtn = document.getElementById('prayerCalculateBtn');
-        this.resultsContainer = document.getElementById('prayerResults');
-        this.totalHoursElement = document.getElementById('totalPrayerHours');
-        this.navigateBtn = document.getElementById('goToAgeCalc');
+        this.results = {
+            totalDailyMinutes: 0,
+            totalDailyHours: 0,
+            percentageOfDay: 0
+        };
         
         this.init();
     }
     
     init() {
-        this.calculateBtn.addEventListener('click', () => this.calculate());
-        this.navigateBtn.addEventListener('click', () => this.navigateToAgeCalc());
+        this.setupEventListeners();
+        this.loadSavedData();
+    }
+    
+    setupEventListeners() {
+        const calculateBtn = document.getElementById('prayerCalculateBtn');
+        if (calculateBtn) {
+            calculateBtn.addEventListener('click', () => this.calculate());
+        }
         
-        // Add input validation
-        [this.wuduTimeInput, this.fajrTimeInput, this.duhurTimeInput, 
-         this.asrTimeInput, this.maghribTimeInput, this.ishaTimeInput].forEach(input => {
-            input.addEventListener('input', () => this.validateInput(input));
+        // Auto-save input changes
+        const inputs = ['wuduTimeInput', 'fajrTimeInput', 'duhurTimeInput', 'asrTimeInput', 'maghribTimeInput', 'ishaTimeInput'];
+        inputs.forEach(inputId => {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.addEventListener('input', () => this.saveInputData());
+            }
         });
     }
     
-    validateInput(input) {
-        const value = parseFloat(input.value);
-        if (isNaN(value) || value <= 0) {
-            input.style.borderColor = '#dc3545';
-            return false;
-        } else {
-            input.style.borderColor = 'var(--border-color)';
-            return true;
+    loadSavedData() {
+        const saved = localStorage.getItem('ajr-prayer-data');
+        if (saved) {
+            const data = JSON.parse(saved);
+            
+            // Load saved input values
+            Object.keys(data).forEach(key => {
+                const input = document.getElementById(key);
+                if (input && data[key] !== undefined) {
+                    input.value = data[key];
+                }
+            });
         }
+    }
+    
+    saveInputData() {
+        const data = {};
+        const inputs = ['wuduTimeInput', 'fajrTimeInput', 'duhurTimeInput', 'asrTimeInput', 'maghribTimeInput', 'ishaTimeInput'];
+        
+        inputs.forEach(inputId => {
+            const input = document.getElementById(inputId);
+            if (input) {
+                data[inputId] = input.value;
+            }
+        });
+        
+        localStorage.setItem('ajr-prayer-data', JSON.stringify(data));
     }
     
     calculate() {
-        // Validate all inputs
-        const inputs = [this.wuduTimeInput, this.fajrTimeInput, this.duhurTimeInput, 
-                       this.asrTimeInput, this.maghribTimeInput, this.ishaTimeInput];
-        const isValid = inputs.every(input => this.validateInput(input));
+        // Get input values with defaults
+        const wuduTime = parseFloat(document.getElementById('wuduTimeInput')?.value) || 5;
+        const fajrTime = parseFloat(document.getElementById('fajrTimeInput')?.value) || 10;
+        const duhurTime = parseFloat(document.getElementById('duhurTimeInput')?.value) || 15;
+        const asrTime = parseFloat(document.getElementById('asrTimeInput')?.value) || 15;
+        const maghribTime = parseFloat(document.getElementById('maghribTimeInput')?.value) || 12;
+        const ishaTime = parseFloat(document.getElementById('ishaTimeInput')?.value) || 15;
         
-        if (!isValid) {
-            this.showError('يرجى إدخال قيم صحيحة في جميع الحقول');
-            return;
-        }
-        
-        // Get input values in minutes
-        const wuduTime = parseFloat(this.wuduTimeInput.value);
-        const fajrTime = parseFloat(this.fajrTimeInput.value);
-        const duhurTime = parseFloat(this.duhurTimeInput.value);
-        const asrTime = parseFloat(this.asrTimeInput.value);
-        const maghribTime = parseFloat(this.maghribTimeInput.value);
-        const ishaTime = parseFloat(this.ishaTimeInput.value);
-        
-        // Calculate total prayer time (5 prayers + 5 wudu times)
+        // Calculate total prayer time (5 prayers + 5 wudu sessions)
         const totalPrayerMinutes = fajrTime + duhurTime + asrTime + maghribTime + ishaTime;
         const totalWuduMinutes = wuduTime * 5; // 5 prayers require wudu
-        
         const totalMinutes = totalPrayerMinutes + totalWuduMinutes;
+        
+        // Convert to hours
         const totalHours = totalMinutes / 60;
         
-        // Display result with animation
-        this.displayResult(totalHours);
+        // Calculate percentage of day
+        const percentageOfDay = (totalMinutes / (24 * 60)) * 100;
+        
+        // Store results
+        this.results = {
+            totalDailyMinutes: Math.round(totalMinutes),
+            totalDailyHours: Math.round(totalHours * 100) / 100,
+            percentageOfDay: Math.round(percentageOfDay * 10) / 10
+        };
+        
+        // Display results
+        this.displayResults();
+        
+        // Save calculation
+        this.saveInputData();
+        
+        // Add animation
+        this.animateResults();
     }
     
-    displayResult(hours) {
-        // Animate the hours number
-        this.animateNumber(this.totalHoursElement, hours, 2, ' ');
+    displayResults() {
+        const totalHoursElement = document.getElementById('totalPrayerHours');
         
-        // Add fade-in animation to results
-        this.resultsContainer.classList.add('fade-in');
-    }
-    
-    animateNumber(element, targetValue, decimals, suffix = '') {
-        const duration = 1000; // 1 second
-        const steps = 50;
-        const stepValue = targetValue / steps;
-        const stepDuration = duration / steps;
-        let currentValue = 0;
+        if (totalHoursElement) {
+            totalHoursElement.textContent = this.results.totalDailyHours.toFixed(2);
+        }
         
-        element.classList.add('number-animate');
+        // Show results container
+        const resultsContainer = document.getElementById('prayerResults');
+        if (resultsContainer) {
+            resultsContainer.style.display = 'block';
+        }
         
-        const interval = setInterval(() => {
-            currentValue += stepValue;
-            if (currentValue >= targetValue) {
-                currentValue = targetValue;
-                clearInterval(interval);
-                element.classList.remove('number-animate');
-            }
-            
-            element.textContent = currentValue.toFixed(decimals) + suffix;
-        }, stepDuration);
-    }
-    
-    navigateToAgeCalc() {
-        // Switch to age calculator tab
-        const tabSystem = window.tabSystem;
-        if (tabSystem) {
-            tabSystem.switchTab('age-calc');
+        // Update result message with more details
+        const resultIntro = resultsContainer.querySelector('.result-intro');
+        if (resultIntro && this.results.percentageOfDay > 0) {
+            resultIntro.innerHTML = `
+                أعطاك الله 24 ساعة في اليوم وأمرك فقط أن تناجيه لمدة<br>
+                <small style="opacity: 0.8; font-size: 0.9em;">
+                    (${this.results.totalDailyMinutes} دقيقة - ${this.results.percentageOfDay}% من يومك)
+                </small>
+            `;
         }
     }
     
-    showError(message) {
-        // Create temporary error message
-        const errorElement = document.createElement('div');
-        errorElement.textContent = message;
-        errorElement.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #dc3545;
-            color: white;
-            padding: 1rem;
-            border-radius: 8px;
-            z-index: 1001;
-            font-family: 'Tajawal', sans-serif;
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-        `;
+    animateResults() {
+        const resultsContainer = document.getElementById('prayerResults');
+        if (resultsContainer) {
+            resultsContainer.style.opacity = '0';
+            resultsContainer.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                resultsContainer.style.transition = 'all 0.6s ease';
+                resultsContainer.style.opacity = '1';
+                resultsContainer.style.transform = 'translateY(0)';
+            }, 100);
+        }
         
-        document.body.appendChild(errorElement);
-        
-        // Remove after 3 seconds
-        setTimeout(() => {
-            if (errorElement.parentNode) {
-                errorElement.parentNode.removeChild(errorElement);
+        // Animate the number
+        const numberElement = document.getElementById('totalPrayerHours');
+        if (numberElement) {
+            this.animateNumber(numberElement, 0, this.results.totalDailyHours, 1000);
+        }
+    }
+    
+    animateNumber(element, start, end, duration) {
+        const startTime = performance.now();
+        const updateNumber = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const current = start + (end - start) * this.easeOutCubic(progress);
+            
+            element.textContent = current.toFixed(2);
+            
+            if (progress < 1) {
+                requestAnimationFrame(updateNumber);
             }
-        }, 3000);
+        };
+        
+        requestAnimationFrame(updateNumber);
+    }
+    
+    easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+    }
+    
+    getResults() {
+        return this.results;
+    }
+    
+    // Method to get formatted time breakdown
+    getTimeBreakdown() {
+        const breakdown = {
+            prayers: {},
+            wudu: {},
+            total: this.results
+        };
+        
+        const inputs = {
+            fajr: 'fajrTimeInput',
+            duhur: 'duhurTimeInput',
+            asr: 'asrTimeInput',
+            maghrib: 'maghribTimeInput',
+            isha: 'ishaTimeInput',
+            wudu: 'wuduTimeInput'
+        };
+        
+        Object.keys(inputs).forEach(prayer => {
+            const input = document.getElementById(inputs[prayer]);
+            if (input) {
+                breakdown.prayers[prayer] = parseFloat(input.value) || 0;
+            }
+        });
+        
+        return breakdown;
     }
 }
-
-// Initialize prayer calculator when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    new PrayerCalculator();
-});

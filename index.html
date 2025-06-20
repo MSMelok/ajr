@@ -5,32 +5,166 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>أجر</title>
-    <meta name="description" content="منصة دعوية تحتوي على حاسبة للعمر في العبادة وأجر لأذكار مستمدة من أحاديث صحيحة.">
-    <meta name="keywords" content="دعوة, ذكر, أذكار, أجر, نخلة في الجنة, حساب العبادة, إسلام, حديث, جنة">
+    <title>أجر - منصة حساب العبادة والأذكار الإسلامية</title>
+    <meta name="description" content="احسب وقت العبادة الحقيقي في حياتك واكتشف كنوز الأجر من الأذكار والأعمال الصالحة المستمدة من الأحاديث النبوية الصحيحة">
+    <meta name="keywords" content="أجر, حساب العبادة, أذكار إسلامية, سوق الجنة, أحاديث صحيحة, عمر الإنسان في العبادة, الأعمال الصالحة, الثواب, إسلام, دعوة">
     <meta name="author" content="MelokMade Innovations">
     <meta name="language" content="AR">
     <meta name="robots" content="index, follow">
-
+    <meta name="theme-color" content="#667eea">
+    <meta name="msapplication-TileColor" content="#667eea">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://ajr.replit.app/">
+    
     <!-- Open Graph for social sharing -->
-    <meta property="og:title" content="أجر">
-    <meta property="og:description" content="اكتشف عدد سنوات العبادة لديك وابدأ التسوق من سوق الجنة بالأذكار والأعمال الصالحة.">
+    <meta property="og:title" content="أجر - منصة حساب العبادة والأذكار الإسلامية">
+    <meta property="og:description" content="احسب وقت العبادة الحقيقي في حياتك واكتشف كنوز الأجر من الأذكار والأعمال الصالحة المستمدة من الأحاديث النبوية الصحيحة">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="ar_AR">
-    <meta property="og:image" content="./assets/images/og-image.png"> <!-- replace later -->
-    <meta property="og:url" content="https://your-website-url.com"> <!-- replace later -->
+    <meta property="og:site_name" content="أجر">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="أجر - منصة حساب العبادة والأذكار الإسلامية">
+    <meta name="twitter:description" content="احسب وقت العبادة الحقيقي في حياتك واكتشف كنوز الأجر من الأذكار والأعمال الصالحة">
+    
+    <!-- Schema.org markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "أجر",
+        "description": "منصة إسلامية لحساب وقت العبادة واكتشاف الأذكار والأعمال الصالحة",
+        "applicationCategory": "Lifestyle",
+        "operatingSystem": "Web",
+        "inLanguage": "ar",
+        "author": {
+            "@type": "Organization",
+            "name": "MelokMade Innovations"
+        }
+    }
+    </script>
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="./assets/images/favicon.ico"> <!-- replace later -->
-
-    <!-- Fonts and CSS -->
+    <!-- Fonts and Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    
+    <!-- Styles -->
     <link rel="stylesheet" href="./css/styles.css">
 </head>
 
 <body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-image">
+                <div class="hero-illustration">
+                    <svg viewBox="0 0 400 300" class="hero-svg">
+                        <!-- Mosque silhouette with gradient -->
+                        <defs>
+                            <linearGradient id="mosqueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#f093fb;stop-opacity:0.3" />
+                                <stop offset="100%" style="stop-color:#f5576c;stop-opacity:0.1" />
+                            </linearGradient>
+                        </defs>
+                        
+                       
+                        
+                        <!-- Stars -->
+                        <circle cx="50" cy="40" r="2" fill="#fff" opacity="0.8">
+                            <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="120" cy="25" r="1.5" fill="#fff" opacity="0.6">
+                            <animate attributeName="opacity" values="0.6;0.2;0.6" dur="3s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="350" cy="35" r="2" fill="#fff" opacity="0.9">
+                            <animate attributeName="opacity" values="0.9;0.4;0.9" dur="2.5s" repeatCount="indefinite"/>
+                        </circle>
+                        
+                        <!-- Main mosque structure -->
+                        <path d="M100 200 L100 120 Q100 110 110 110 L130 110 Q140 110 140 120 L140 200 Z" fill="url(#mosqueGradient)"/>
+                        <path d="M260 200 L260 120 Q260 110 270 110 L290 110 Q300 110 300 120 L300 200 Z" fill="url(#mosqueGradient)"/>
+                        <path d="M80 200 L80 140 Q80 130 90 130 L310 130 Q320 130 320 140 L320 200 Z" fill="url(#mosqueGradient)"/>
+                        
+                        <!-- Central dome -->
+                        <ellipse cx="200" cy="130" rx="40" ry="25" fill="url(#mosqueGradient)"/>
+                        <path d="M200 105 Q195 95 200 85 Q205 95 200 105" fill="#ffd700"/>
+                        
+                        <!-- Minarets -->
+                        <rect x="115" y="80" width="10" height="50" fill="url(#mosqueGradient)"/>
+                        <rect x="275" y="80" width="10" height="50" fill="url(#mosqueGradient)"/>
+                        <ellipse cx="120" cy="80" rx="8" ry="6" fill="url(#mosqueGradient)"/>
+                        <ellipse cx="280" cy="80" rx="8" ry="6" fill="url(#mosqueGradient)"/>
+                        <path d="M120 74 Q118 70 120 66 Q122 70 120 74" fill="#ffd700"/>
+                        <path d="M280 74 Q278 70 280 66 Q282 70 280 74" fill="#ffd700"/>
+                        
+                        <!-- Base platform -->
+                        <rect x="60" y="200" width="280" height="20" fill="url(#mosqueGradient)" opacity="0.8"/>
+                        
+                        <!-- Decorative arches -->
+                        <path d="M90 180 Q90 170 100 170 Q110 170 110 180" stroke="rgba(255,255,255,0.3)" stroke-width="2" fill="none"/>
+                        <path d="M190 180 Q190 170 200 170 Q210 170 210 180" stroke="rgba(255,255,255,0.3)" stroke-width="2" fill="none"/>
+                        <path d="M290 180 Q290 170 300 170 Q310 170 310 180" stroke="rgba(255,255,255,0.3)" stroke-width="2" fill="none"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i data-feather="star" class="hero-badge-icon"></i>
+                    <span>منصة الأجر والثواب</span>
+                </div>
+                
+                <h1 class="hero-title">
+                    <span class="hero-title-main">أجر</span>
+                    <span class="hero-title-sub">سوق الجنة في يديك</span>
+                </h1>
+                
+                <p class="hero-description">
+                    اكتشف الوقت الحقيقي المتاح لك للعبادة، واستثمر كل لحظة في الأعمال الصالحة التي تقربك إلى الجنة
+                </p>
+                
+                <div class="hero-cta">
+                    <button type="button" class="cta-btn cta-primary" data-tab="prayer-calc">
+                        <i data-feather="clock" class="cta-icon"></i>
+                        <span>حاسبة الصلاة</span>
+                    </button>
+                    <button type="button" class="cta-btn cta-secondary" data-tab="age-calc">
+                        <i data-feather="calendar" class="cta-icon"></i>
+                        <span>العمر الحقيقي</span>
+                    </button>
+                    <button type="button" class="cta-btn cta-accent" data-tab="marketplace">
+                        <i data-feather="gift" class="cta-icon"></i>
+                        <span>سوق الجنة</span>
+                    </button>
+                </div>
+                
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">متاح</div>
+                        <div class="stat-number">24</div>
+                        <div class="stat-label">ساعة يومياً</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <div class="stat-label">لأجل</div>
+                        <div class="stat-number">∞</div>
+                        <div class="stat-label">أجر في الآخرة</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Header -->
     <header class="header">
         <!-- Navigation Tabs -->
@@ -38,20 +172,32 @@
             <div class="container">
                 <ul class="tab-list">
                     <li class="tab-item">
-                        <button class="tab-button active" data-tab="prayer-calc">حاسبة وقت الصلاة</button>
+                        <button type="button" class="tab-button active" data-tab="prayer-calc">
+                            <i data-feather="clock" class="tab-icon"></i>
+                            <span>حاسبة وقت الصلاة</span>
+                        </button>
                     </li>
                     <li class="tab-item">
-                        <button class="tab-button" data-tab="age-calc">حاسبة العمر الحقيقي</button>
+                        <button type="button" class="tab-button" data-tab="age-calc">
+                            <i data-feather="calendar" class="tab-icon"></i>
+                            <span>حاسبة العمر الحقيقي</span>
+                        </button>
                     </li>
                     <li class="tab-item">
-                        <button class="tab-button" data-tab="marketplace">سوق الجنة</button>
+                        <button type="button" class="tab-button" data-tab="marketplace">
+                            <i data-feather="shopping-bag" class="tab-icon"></i>
+                            <span>سوق الجنة</span>
+                        </button>
                     </li>
                     <li class="tab-item">
-                        <button class="tab-button" data-tab="starred">المفضلة ⭐</button>
+                        <button type="button" class="tab-button" data-tab="starred">
+                            <i data-feather="star" class="tab-icon"></i>
+                            <span>المفضلة</span>
+                        </button>
                     </li>
                 </ul>
                 <button class="theme-toggle" id="themeToggle">
-                    <span class="theme-icon">🌙</span>
+                    <i data-feather="moon" class="theme-icon"></i>
                 </button>
             </div>
         </nav>
@@ -63,53 +209,88 @@
             <!-- Prayer Time Calculator Section -->
             <section class="tab-content active" id="prayer-calc">
                 <div class="section-header">
+                    <div class="section-icon">
+                        <i data-feather="clock"></i>
+                    </div>
                     <h2 class="section-title">حاسبة وقت الصلاة والوضوء</h2>
                     <p class="section-description">احسب الوقت الذي تقضيه في مناجاة الله يومياً</p>
                 </div>
                 
                 <div class="calculator-container">
                     <div class="calculator-inputs">
+                        <div class="input-section-title">
+                            <i data-feather="clock" class="input-title-icon"></i>
+                            <h3>تفاصيل المواقيت</h3>
+                        </div>
+                        
                         <div class="input-group">
-                            <label for="wuduTimeInput">وقت الوضوء لكل صلاة (دقيقة)</label>
+                            <label for="wuduTimeInput">
+                                <i data-feather="droplet" class="input-icon"></i>
+                                وقت الوضوء لكل صلاة (دقيقة)
+                            </label>
                             <input type="number" id="wuduTimeInput" min="1" max="30" value="5">
                         </div>
                         
                         <div class="input-group">
-                            <label for="fajrTimeInput">وقت صلاة الفجر (دقيقة)</label>
+                            <label for="fajrTimeInput">
+                                <i data-feather="sunrise" class="input-icon"></i>
+                                وقت صلاة الفجر (دقيقة)
+                            </label>
                             <input type="number" id="fajrTimeInput" min="1" max="60" value="10">
                         </div>
                         
                         <div class="input-group">
-                            <label for="duhurTimeInput">وقت صلاة الظهر (دقيقة)</label>
+                            <label for="duhurTimeInput">
+                                <i data-feather="sun" class="input-icon"></i>
+                                وقت صلاة الظهر (دقيقة)
+                            </label>
                             <input type="number" id="duhurTimeInput" min="1" max="60" value="15">
                         </div>
                         
                         <div class="input-group">
-                            <label for="asrTimeInput">وقت صلاة العصر (دقيقة)</label>
+                            <label for="asrTimeInput">
+                                <i data-feather="sun" class="input-icon"></i>
+                                وقت صلاة العصر (دقيقة)
+                            </label>
                             <input type="number" id="asrTimeInput" min="1" max="60" value="15">
                         </div>
                         
                         <div class="input-group">
-                            <label for="maghribTimeInput">وقت صلاة المغرب (دقيقة)</label>
+                            <label for="maghribTimeInput">
+                                <i data-feather="sunset" class="input-icon"></i>
+                                وقت صلاة المغرب (دقيقة)
+                            </label>
                             <input type="number" id="maghribTimeInput" min="1" max="60" value="12">
                         </div>
                         
                         <div class="input-group">
-                            <label for="ishaTimeInput">وقت صلاة العشاء (دقيقة)</label>
+                            <label for="ishaTimeInput">
+                                <i data-feather="moon" class="input-icon"></i>
+                                وقت صلاة العشاء (دقيقة)
+                            </label>
                             <input type="number" id="ishaTimeInput" min="1" max="60" value="15">
                         </div>
                         
-                        <button class="calculate-btn" id="prayerCalculateBtn">احسب وقت المناجاة</button>
+                        <button class="calculate-btn" id="prayerCalculateBtn">
+                            <i data-feather="play" class="btn-icon"></i>
+                            احسب وقت المناجاة
+                        </button>
                     </div>
                     
                     <div class="prayer-results" id="prayerResults">
+                        <div class="result-icon">
+                            <i data-feather="heart"></i>
+                        </div>
                         <div class="result-message">
                             <p class="result-intro">أعطاك الله 24 ساعة في اليوم وأمرك فقط أن تناجيه لمدة</p>
                             <div class="result-number highlight" id="totalPrayerHours">--</div>
                             <p class="result-label">ساعة في اليوم</p>
                         </div>
                         
-                        <button class="navigate-btn" id="goToAgeCalc">احسب عمرك الحقيقي</button>
+                        <button class="navigate-btn" id="goToAgeCalc">
+                            <i data-feather="arrow-left" class="btn-icon"></i>
+                            احسب عمرك الحقيقي
+                        </button>
                     </div>
                 </div>
             </section>
@@ -117,56 +298,95 @@
             <!-- Age Calculator Section -->
             <section class="tab-content" id="age-calc">
                 <div class="section-header">
+                    <div class="section-icon">
+                        <i data-feather="calendar"></i>
+                    </div>
                     <h2 class="section-title">حاسبة العمر الحقيقي</h2>
                     <p class="section-description">احسب كم من الوقت متاح لك للعبادة في حياتك</p>
                 </div>
                 
                 <div class="calculator-container">
                     <div class="calculator-inputs">
+                        <div class="input-section-title">
+                            <i data-feather="user" class="input-title-icon"></i>
+                            <h3>بيانات العمر</h3>
+                        </div>
+                        
                         <div class="input-group">
-                            <label for="ageInput">العمر المتوقع (سنة)</label>
+                            <label for="ageInput">
+                                <i data-feather="trending-up" class="input-icon"></i>
+                                العمر المتوقع (سنة)
+                            </label>
                             <input type="number" id="ageInput" min="14" max="150" value="70">
                         </div>
                         
                         <div class="input-group">
-                            <label for="sleepInput">ساعات النوم يومياً</label>
+                            <label for="sleepInput">
+                                <i data-feather="moon" class="input-icon"></i>
+                                ساعات النوم يومياً
+                            </label>
                             <input type="number" id="sleepInput" min="1" max="24" value="8" step="0.5">
                         </div>
                         
                         <div class="input-group">
-                            <label for="bathroomInput">وقت الحمام يومياً (دقيقة)</label>
+                            <label for="bathroomInput">
+                                <i data-feather="home" class="input-icon"></i>
+                                وقت الحمام يومياً (دقيقة)
+                            </label>
                             <input type="number" id="bathroomInput" min="1" max="300" value="30">
                         </div>
                         
                         <div class="input-group">
-                            <label for="workInput">وقت العمل يومياً (ساعة)</label>
+                            <label for="workInput">
+                                <i data-feather="briefcase" class="input-icon"></i>
+                                وقت العمل يومياً (ساعة)
+                            </label>
                             <input type="number" id="workInput" min="0" max="24" value="8" step="0.5">
                         </div>
                         
                         <div class="input-group">
-                            <label for="eatingInput">وقت الأكل يومياً (دقيقة)</label>
+                            <label for="eatingInput">
+                                <i data-feather="coffee" class="input-icon"></i>
+                                وقت الأكل يومياً (دقيقة)
+                            </label>
                             <input type="number" id="eatingInput" min="1" max="1440" value="120">
                         </div>
                         
-                        <button class="calculate-btn" id="calculateBtn">احسب الوقت المتاح</button>
+                        <button class="calculate-btn" id="calculateBtn">
+                            <i data-feather="play" class="btn-icon"></i>
+                            احسب الوقت المتاح
+                        </button>
                     </div>
                     
                     <div class="calculator-results" id="calculatorResults">
                         <div class="result-item">
+                            <div class="result-icon-small">
+                                <i data-feather="calendar"></i>
+                            </div>
                             <div class="result-number" id="totalLifeYears">--</div>
                             <div class="result-label">سنوات العمر بعد البلوغ</div>
                         </div>
                         
                         <div class="result-item">
+                            <div class="result-icon-small">
+                                <i data-feather="clock"></i>
+                            </div>
                             <div class="result-number" id="timeLostYears">--</div>
                             <div class="result-label">سنوات مفقودة في الأعمال الدنيوية</div>
                         </div>
                         
                         <div class="result-item highlight">
+                            <div class="result-icon-small">
+                                <i data-feather="heart"></i>
+                            </div>
                             <div class="result-number" id="worshipTimeYears">--</div>
                             <div class="result-label">سنوات متاحة للعبادة والطاعة</div>
                         </div>
 
+                        <button class="navigate-btn" id="goToMarketplace">
+                            <i data-feather="arrow-left" class="btn-icon"></i>
+                            تصفح الأجر الآن
+                        </button>
                     </div>
                 </div>
             </section>
@@ -174,6 +394,9 @@
             <!-- Marketplace Section -->
             <section class="tab-content" id="marketplace">
                 <div class="section-header">
+                    <div class="section-icon">
+                        <i data-feather="shopping-bag"></i>
+                    </div>
                     <h2 class="section-title">سوق الجنة</h2>
                     <p class="section-description">اكتشف الأعمال الصالحة وثوابها في الجنة</p>
                 </div>
@@ -186,6 +409,9 @@
             <!-- Starred Section -->
             <section class="tab-content" id="starred">
                 <div class="section-header">
+                    <div class="section-icon">
+                        <i data-feather="star"></i>
+                    </div>
                     <h2 class="section-title">المفضلة المحفوظة</h2>
                     <p class="section-description">الأعمال الصالحة التي أضفتها إلى مفضلتك</p>
                 </div>
@@ -226,8 +452,16 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Scripts - Load config first -->
     <script src="./js/config.js"></script>
+    <script>
+        // Ensure config is available globally and wait for all scripts to load
+        window.addEventListener('load', function() {
+            if (window.feather) {
+                feather.replace();
+            }
+        });
+    </script>
     <script src="./js/main.js"></script>
     <script src="./js/calculator.js"></script>
     <script src="./js/prayer-calculator.js"></script>

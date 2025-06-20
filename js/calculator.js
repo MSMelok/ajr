@@ -1,167 +1,157 @@
-// Calculator functionality
-class WorshipCalculator {
+// Age Calculator class
+class AgeCalculator {
     constructor() {
-        this.ageInput = document.getElementById('ageInput');
-        this.sleepInput = document.getElementById('sleepInput');
-        this.bathroomInput = document.getElementById('bathroomInput');
-        this.workInput = document.getElementById('workInput');
-        this.eatingInput = document.getElementById('eatingInput');
-        this.calculateBtn = document.getElementById('calculateBtn');
-        this.resultsContainer = document.getElementById('calculatorResults');
-        this.totalLifeElement = document.getElementById('totalLifeYears');
-        this.timeLostElement = document.getElementById('timeLostYears');
-        this.worshipTimeElement = document.getElementById('worshipTimeYears');
+        this.results = {
+            totalLifeYears: 0,
+            timeLostYears: 0,
+            worshipTimeYears: 0
+        };
         
         this.init();
     }
     
     init() {
-        this.calculateBtn.addEventListener('click', () => this.calculate());
+        this.setupEventListeners();
+        this.loadSavedData();
+    }
+    
+    setupEventListeners() {
+        const calculateBtn = document.getElementById('calculateBtn');
+        if (calculateBtn) {
+            calculateBtn.addEventListener('click', () => this.calculate());
+        }
         
-        // Add input validation
-        [this.ageInput, this.sleepInput, this.bathroomInput, this.workInput, this.eatingInput].forEach(input => {
-            input.addEventListener('input', () => this.validateInput(input));
+        // Auto-save input changes
+        const inputs = ['ageInput', 'sleepInput', 'bathroomInput', 'workInput', 'eatingInput'];
+        inputs.forEach(inputId => {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.addEventListener('input', () => this.saveInputData());
+            }
         });
     }
     
-    validateInput(input) {
-        const value = parseFloat(input.value);
-        if (isNaN(value) || value <= 0) {
-            input.style.borderColor = '#dc3545';
-            return false;
-        } else {
-            input.style.borderColor = 'var(--border-color)';
-            return true;
+    loadSavedData() {
+        const saved = localStorage.getItem('ajr-calculator-data');
+        if (saved) {
+            const data = JSON.parse(saved);
+            
+            // Load saved input values
+            Object.keys(data).forEach(key => {
+                const input = document.getElementById(key);
+                if (input && data[key] !== undefined) {
+                    input.value = data[key];
+                }
+            });
         }
+    }
+    
+    saveInputData() {
+        const data = {};
+        const inputs = ['ageInput', 'sleepInput', 'bathroomInput', 'workInput', 'eatingInput'];
+        
+        inputs.forEach(inputId => {
+            const input = document.getElementById(inputId);
+            if (input) {
+                data[inputId] = input.value;
+            }
+        });
+        
+        localStorage.setItem('ajr-calculator-data', JSON.stringify(data));
     }
     
     calculate() {
-        // Validate all inputs
-        const inputs = [this.ageInput, this.sleepInput, this.bathroomInput, this.workInput, this.eatingInput];
-        const isValid = inputs.every(input => this.validateInput(input));
+        // Get input values with defaults
+        const expectedAge = parseFloat(document.getElementById('ageInput')?.value) || 70;
+        const sleepHours = parseFloat(document.getElementById('sleepInput')?.value) || 8;
+        const bathroomMinutes = parseFloat(document.getElementById('bathroomInput')?.value) || 30;
+        const workHours = parseFloat(document.getElementById('workInput')?.value) || 8;
+        const eatingMinutes = parseFloat(document.getElementById('eatingInput')?.value) || 120;
         
-        if (!isValid) {
-            this.showError('يرجى إدخال قيم صحيحة في جميع الحقول');
-            return;
-        }
+        // Calculate total life years after puberty (assuming puberty at 14)
+        const totalLifeYears = Math.max(0, expectedAge - 14);
         
-        // Get input values
-        const totalAge = parseFloat(this.ageInput.value);
-        const sleepHoursPerDay = parseFloat(this.sleepInput.value);
-        const bathroomMinutesPerDay = parseFloat(this.bathroomInput.value);
-        const workHoursPerDay = parseFloat(this.workInput.value);
-        const eatingMinutesPerDay = parseFloat(this.eatingInput.value);
+        // Calculate daily time lost (in hours)
+        const dailyTimeLost = sleepHours + (bathroomMinutes / 60) + workHours + (eatingMinutes / 60);
         
-        // Validate ranges
-        if (sleepHoursPerDay > 24) {
-            this.showError('ساعات النوم لا يمكن أن تتجاوز 24 ساعة');
-            return;
-        }
+        // Calculate yearly time lost
+        const yearlyTimeLost = (dailyTimeLost * 365) / (24 * 365); // Convert to fraction of year
         
-        if (workHoursPerDay > 24) {
-            this.showError('ساعات العمل لا يمكن أن تتجاوز 24 ساعة');
-            return;
-        }
+        // Calculate total time lost in years
+        const timeLostYears = yearlyTimeLost * totalLifeYears;
         
-        if (eatingMinutesPerDay > 1440) {
-            this.showError('وقت الأكل لا يمكن أن يتجاوز 1440 دقيقة (24 ساعة)');
-            return;
-        }
+        // Calculate available worship time
+        const worshipTimeYears = Math.max(0, totalLifeYears - timeLostYears);
         
-        if (bathroomMinutesPerDay > 1440) {
-            this.showError('وقت الحمام لا يمكن أن يتجاوز 1440 دقيقة (24 ساعة)');
-            return;
-        }
+        // Store results
+        this.results = {
+            totalLifeYears: Math.round(totalLifeYears * 10) / 10,
+            timeLostYears: Math.round(timeLostYears * 10) / 10,
+            worshipTimeYears: Math.round(worshipTimeYears * 10) / 10
+        };
         
-        // Calculate time lost per day in minutes
-        const sleepMinutesPerDay = sleepHoursPerDay * 60;
-        const workMinutesPerDay = workHoursPerDay * 60;
-        const totalLostMinutesPerDay = sleepMinutesPerDay + workMinutesPerDay + eatingMinutesPerDay + bathroomMinutesPerDay;
+        // Display results
+        this.displayResults();
         
-        // Calculate total minutes in a day
-        const minutesPerDay = 24 * 60; // 1440 minutes
+        // Save calculation
+        this.saveInputData();
         
-        // Validate total doesn't exceed 24 hours
-        if (totalLostMinutesPerDay >= minutesPerDay) {
-            this.showError('مجموع الأوقات المدخلة يتجاوز 24 ساعة في اليوم');
-            return;
-        }
-        
-        // Deduct 14 years before maturity
-        const maturityYears = 14;
-        const matureAge = Math.max(0, totalAge - maturityYears);
-        
-        // Calculate available minutes per day for worship
-        const availableMinutesPerDay = minutesPerDay - totalLostMinutesPerDay;
-        
-        // Convert to years (how many years worth of time is lost vs available)
-        const timeLostYears = (totalLostMinutesPerDay / minutesPerDay) * matureAge;
-        const worshipTimeYears = (availableMinutesPerDay / minutesPerDay) * matureAge;
-        
-        // Display results with animation
-        this.displayResults(matureAge, timeLostYears, worshipTimeYears);
+        // Add animation
+        this.animateResults();
     }
     
-    displayResults(totalAge, timeLost, worshipTime) {
-        // Animate numbers
-        this.animateNumber(this.totalLifeElement, totalAge, 0, ' سنة');
-        this.animateNumber(this.timeLostElement, timeLost, 1, ' سنة');
-        this.animateNumber(this.worshipTimeElement, worshipTime, 1, ' سنة');
+    displayResults() {
+        const totalLifeElement = document.getElementById('totalLifeYears');
+        const timeLostElement = document.getElementById('timeLostYears');
+        const worshipTimeElement = document.getElementById('worshipTimeYears');
         
-        // Add fade-in animation to results
-        this.resultsContainer.classList.add('fade-in');
+        if (totalLifeElement) {
+            totalLifeElement.textContent = this.results.totalLifeYears.toFixed(1);
+        }
+        
+        if (timeLostElement) {
+            timeLostElement.textContent = this.results.timeLostYears.toFixed(1);
+        }
+        
+        if (worshipTimeElement) {
+            worshipTimeElement.textContent = this.results.worshipTimeYears.toFixed(1);
+        }
+        
+        // Show results container
+        const resultsContainer = document.getElementById('calculatorResults');
+        if (resultsContainer) {
+            resultsContainer.style.display = 'grid';
+        }
     }
     
-    animateNumber(element, targetValue, decimals, suffix = '') {
-        const duration = 1000; // 1 second
-        const steps = 50;
-        const stepValue = targetValue / steps;
-        const stepDuration = duration / steps;
-        let currentValue = 0;
-        
-        element.classList.add('number-animate');
-        
-        const interval = setInterval(() => {
-            currentValue += stepValue;
-            if (currentValue >= targetValue) {
-                currentValue = targetValue;
-                clearInterval(interval);
-                element.classList.remove('number-animate');
-            }
+    animateResults() {
+        const resultItems = document.querySelectorAll('#calculatorResults .result-item');
+        resultItems.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
             
-            element.textContent = currentValue.toFixed(decimals) + suffix;
-        }, stepDuration);
+            setTimeout(() => {
+                item.style.transition = 'all 0.5s ease';
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, index * 150);
+        });
     }
     
-    showError(message) {
-        // Create temporary error message
-        const errorElement = document.createElement('div');
-        errorElement.textContent = message;
-        errorElement.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #dc3545;
-            color: white;
-            padding: 1rem;
-            border-radius: 8px;
-            z-index: 1001;
-            font-family: 'Tajawal', sans-serif;
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-        `;
-        
-        document.body.appendChild(errorElement);
-        
-        // Remove after 3 seconds
-        setTimeout(() => {
-            if (errorElement.parentNode) {
-                errorElement.parentNode.removeChild(errorElement);
-            }
-        }, 3000);
+    getResults() {
+        return this.results;
+    }
+    
+    // Utility method to format time
+    formatTime(hours) {
+        if (hours < 1) {
+            return `${Math.round(hours * 60)} دقيقة`;
+        } else if (hours < 24) {
+            return `${Math.round(hours * 10) / 10} ساعة`;
+        } else {
+            const days = Math.floor(hours / 24);
+            const remainingHours = Math.round((hours % 24) * 10) / 10;
+            return `${days} يوم و ${remainingHours} ساعة`;
+        }
     }
 }
-
-// Initialize calculator when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    new WorshipCalculator();
-});

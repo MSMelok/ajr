@@ -1,5 +1,5 @@
 // Project Configuration
-const projectName = "أجر";
+const projectName = "أجر - Ajr";
 
 // Initialize project title
 document.addEventListener('DOMContentLoaded', function() {
@@ -35,14 +35,6 @@ const rewards = [
         hadith: "من قال لا إله إلا الله وحده لا شريك له له الملك وله الحمد وهو على كل شيء قدير في يوم مائة مرة كانت له عدل عشر رقاب وكتبت له مائة حسنة ومحيت عنه مائة سيئة",
         source: "متفق عليه",
         icon: "✨"
-    },
-    {
-        title: "أجر حجة وعمرة",
-        thikr: "سبحان الله العظيم وبحمده",
-        description: "نل أجر الحج والعمرة دون مغادرة منزلك",
-        hadith: "من قال سبحان الله العظيم وبحمده غُرست له نخلة في الجنة، ومن قالها مائة مرة كُتب له أجر حجة وعمرة",
-        source: "رواه الترمذي والحاكم",
-        icon: "🕋"
     },
     {
         title: "كنز من كنوز الجنة",
@@ -325,3 +317,39 @@ const rewards = [
         icon: "📖"
     }
 ];
+// Configuration file for the Ajr app
+const CONFIG = {
+    // Default values for calculations
+    defaults: {
+        wudu: 5,
+        fajr: 10,
+        duhur: 15,
+        asr: 15,
+        maghrib: 12,
+        isha: 15,
+        expectedAge: 70,
+        sleepHours: 8,
+        bathroomMinutes: 30,
+        workHours: 8,
+        eatingMinutes: 120
+    },
+    
+    // Storage keys
+    storage: {
+        theme: 'ajr-theme',
+        starredItems: 'ajr-starred-items',
+        calculatorData: 'ajr-calculator-data',
+        prayerData: 'ajr-prayer-data'
+    },
+    
+    // Animation settings
+    animations: {
+        cardDelay: 100,
+        resultDelay: 150,
+        iconInitDelay: [200, 500, 1000]
+    }
+};
+
+// Make config globally available
+window.CONFIG = CONFIG;
+window.config = CONFIG; // Add lowercase alias for compatibility

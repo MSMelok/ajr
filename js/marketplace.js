@@ -1,227 +1,308 @@
-// Marketplace functionality
-class MarketplaceManager {
+// Marketplace class for managing rewards and starred items
+class Marketplace {
     constructor() {
-        this.gridContainer = document.getElementById('marketplaceGrid');
-        this.starredGrid = document.getElementById('starredGrid');
-        this.emptyStarred = document.getElementById('emptyStarred');
-        this.modalOverlay = document.getElementById('modalOverlay');
-        this.modalTitle = document.getElementById('modalTitle');
-        this.modalThikr = document.getElementById('modalThikr');
-        this.modalHadith = document.getElementById('modalHadith');
-        this.modalSource = document.getElementById('modalSource');
-        this.modalClose = document.getElementById('modalClose');
-        
-        // Load starred items from localStorage
-        this.starredItems = this.loadStarredItems();
+        this.rewards = this.getRewardData();
+        this.currentModal = null;
         
         this.init();
     }
     
-    init() {
-        this.renderCards();
-        this.renderStarredCards();
-        this.updateStarredTabBadge();
-        this.setupModalEvents();
+    getRewardData() {
+        // Use rewards from config.js and add IDs for compatibility
+        if (typeof rewards !== 'undefined') {
+            return rewards.map((reward, index) => ({
+                id: index + 1,
+                title: reward.title,
+                description: reward.description,
+                reward: reward.description, // Use description as reward for now
+                icon: reward.icon,
+                thikr: reward.thikr,
+                hadith: reward.hadith,
+                source: reward.source
+            }));
+        }
+        
+        // Fallback data if config.js rewards are not available
+        return [
+            {
+                id: 1,
+                title: "نخلة في الجنة",
+                description: "اغتنم الفرصة وازرع نخلة في الجنة بذكر واحد فقط",
+                reward: "اغتنم الفرصة وازرع نخلة في الجنة بذكر واحد فقط",
+                icon: "🌴",
+                thikr: "سبحان الله وبحمده",
+                hadith: "من قال سبحان الله وبحمده غُرست له نخلة في الجنة",
+                source: "رواه الترمذي وصححه الألباني"
+            }
+        ];
     }
     
-    renderCards() {
-        if (!this.gridContainer) {
-            console.error('Grid container not found');
-            return;
+    init() {
+        this.setupModalEventListeners();
+        this.renderMarketplace();
+        
+        // Ensure icons are properly initialized after DOM updates
+        this.ensureIconsLoaded();
+    }
+    
+    ensureIconsLoaded() {
+        // Multiple attempts to ensure Feather icons load properly
+        const initIcons = () => {
+            if (window.feather) {
+                feather.replace();
+            }
+        };
+        
+        // Initial load
+        initIcons();
+        
+        // Retry after short delays
+        setTimeout(initIcons, 200);
+        setTimeout(initIcons, 500);
+    }
+    
+    setupModalEventListeners() {
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalClose = document.getElementById('modalClose');
+        
+        if (modalOverlay) {
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    this.closeModal();
+                }
+            });
         }
         
-        if (typeof rewards === 'undefined') {
-            console.error('Rewards data not found - waiting for config.js to load');
-            // Retry after a short delay
-            setTimeout(() => this.renderCards(), 100);
-            return;
+        if (modalClose) {
+            modalClose.addEventListener('click', () => {
+                this.closeModal();
+            });
         }
         
-        this.gridContainer.innerHTML = '';
-        
-        rewards.forEach((reward, index) => {
-            const card = this.createCard(reward, index);
-            this.gridContainer.appendChild(card);
+        // ESC key to close modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.currentModal) {
+                this.closeModal();
+            }
         });
     }
     
-    createCard(reward, index) {
+    renderMarketplace() {
+        const grid = document.getElementById('marketplaceGrid');
+        if (!grid) return;
+        
+        grid.innerHTML = '';
+        
+        this.rewards.forEach((reward, index) => {
+            const card = this.createRewardCard(reward, index);
+            grid.appendChild(card);
+        });
+        
+        // Initialize Feather icons after rendering cards with proper timing
+        setTimeout(() => {
+            if (window.feather) {
+                feather.replace();
+            }
+        }, 100);
+        
+        // Animate cards
+        this.animateCards();
+    }
+    
+    createRewardCard(reward, index) {
         const card = document.createElement('div');
         card.className = 'reward-card';
-        card.setAttribute('data-index', index);
+        card.style.animationDelay = `${index * 0.1}s`;
         
-        const isStarred = this.isStarred(index);
+        const isStarred = window.ajrApp ? window.ajrApp.isItemStarred(reward.id) : false;
         
         card.innerHTML = `
-            <button class="star-button ${isStarred ? 'starred' : ''}" data-index="${index}">
-                ${isStarred ? '⭐' : '☆'}
+            <button class="star-button ${isStarred ? 'starred' : ''}" data-reward-id="${reward.id}">
+                <i data-feather="star"></i>
             </button>
             <div class="card-image">
-                <span>${reward.icon || '🎁'}</span>
+                <span>${reward.icon}</span>
             </div>
             <div class="card-content">
                 <h3 class="card-title">${reward.title}</h3>
                 <p class="card-description">${reward.description}</p>
-                <button class="card-button" data-index="${index}">تفاصيل أكثر</button>
+                <div class="card-reward">
+                    <strong>الثواب: ${reward.reward}</strong>
+                </div>
+                <button class="card-button" data-reward-id="${reward.id}">
+                    عرض التفاصيل
+                </button>
             </div>
         `;
         
-        // Add click event to star button
+        // Add event listeners
+        const detailsButton = card.querySelector('.card-button');
         const starButton = card.querySelector('.star-button');
+        
+        detailsButton.addEventListener('click', () => {
+            this.openModal(reward);
+        });
+        
         starButton.addEventListener('click', (e) => {
             e.stopPropagation();
-            this.toggleStar(index);
+            this.toggleStar(reward.id);
         });
+
         
-        // Add click event to button
-        const button = card.querySelector('.card-button');
-        button.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.openModal(reward);
-        });
-        
-        // Add click event to entire card
-        card.addEventListener('click', () => {
-            this.openModal(reward);
+        // Make entire card clickable
+        card.addEventListener('click', (e) => {
+            if (!e.target.closest('.star-button') && !e.target.closest('.card-button')) {
+                this.openModal(reward);
+            }
         });
         
         return card;
     }
     
-    openModal(reward) {
-        this.modalTitle.textContent = reward.title;
-        this.modalThikr.textContent = reward.thikr;
-        this.modalHadith.textContent = reward.hadith;
-        this.modalSource.textContent = reward.source;
+    renderStarredItems() {
+        const starredGrid = document.getElementById('starredGrid');
+        const emptyStarred = document.getElementById('emptyStarred');
         
-        this.modalOverlay.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        if (!starredGrid) return;
+        
+        const starredIds = window.ajrApp ? window.ajrApp.starredItems : [];
+        const starredRewards = this.rewards.filter(reward => starredIds.includes(reward.id));
+        
+        if (starredRewards.length === 0) {
+            if (emptyStarred) {
+                emptyStarred.style.display = 'block';
+            }
+            // Clear other content
+            const existingCards = starredGrid.querySelectorAll('.reward-card');
+            existingCards.forEach(card => card.remove());
+        } else {
+            if (emptyStarred) {
+                emptyStarred.style.display = 'none';
+            }
+            
+            // Clear existing cards
+            const existingCards = starredGrid.querySelectorAll('.reward-card');
+            existingCards.forEach(card => card.remove());
+            
+            // Add starred cards
+            starredRewards.forEach((reward, index) => {
+                const card = this.createRewardCard(reward, index);
+                card.classList.add('starred-item');
+                starredGrid.appendChild(card);
+            });
+            
+            // Animate cards
+            this.animateCards(starredGrid);
+        }
+        
+        // Re-initialize Feather icons
+        if (window.feather) {
+            feather.replace();
+        }
+    }
+    
+    toggleStar(rewardId) {
+        if (window.ajrApp) {
+            window.ajrApp.toggleStarredItem(rewardId);
+            this.updateStarredButtons();
+            
+            // If currently viewing starred items, re-render
+            if (window.tabSystem && window.tabSystem.currentTab === 'starred') {
+                this.renderStarredItems();
+            }
+        }
+    }
+    
+    updateStarredButtons() {
+        const starButtons = document.querySelectorAll('.star-button[data-reward-id]');
+        starButtons.forEach(button => {
+            const rewardId = parseInt(button.getAttribute('data-reward-id'));
+            const isStarred = window.ajrApp ? window.ajrApp.isItemStarred(rewardId) : false;
+            
+            button.classList.toggle('starred', isStarred);
+        });
+    }
+    
+    openModal(reward) {
+        const modal = document.getElementById('modalOverlay');
+        const title = document.getElementById('modalTitle');
+        const thikr = document.getElementById('modalThikr');
+        const hadith = document.getElementById('modalHadith');
+        const source = document.getElementById('modalSource');
+        
+        if (!modal) return;
+        
+        // Set modal content
+        if (title) title.textContent = reward.title;
+        if (thikr) thikr.textContent = reward.thikr;
+        if (hadith) hadith.textContent = reward.hadith;
+        if (source) source.textContent = reward.source;
+        
+        // Show modal
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        this.currentModal = reward;
+        
+        // Re-initialize Feather icons in modal
+        if (window.feather) {
+            feather.replace();
+        }
     }
     
     closeModal() {
-        this.modalOverlay.classList.remove('active');
-        document.body.style.overflow = ''; // Restore scrolling
-    }
-    
-    loadStarredItems() {
-        try {
-            const starred = localStorage.getItem('starredRewards');
-            const items = starred ? JSON.parse(starred) : [];
-            console.log('Loaded starred items:', items);
-            return items;
-        } catch (error) {
-            console.error('Error loading starred items:', error);
-            return [];
-        }
-    }
-    
-    saveStarredItems() {
-        try {
-            localStorage.setItem('starredRewards', JSON.stringify(this.starredItems));
-            console.log('Saved starred items:', this.starredItems);
-        } catch (error) {
-            console.error('Error saving starred items:', error);
-        }
-    }
-    
-    isStarred(index) {
-        return this.starredItems.includes(index);
-    }
-    
-    toggleStar(index) {
-        if (this.isStarred(index)) {
-            this.starredItems = this.starredItems.filter(item => item !== index);
-        } else {
-            this.starredItems.push(index);
+        const modal = document.getElementById('modalOverlay');
+        if (modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
         }
         
-        this.saveStarredItems();
-        this.updateStarButtons();
-        this.renderStarredCards();
-        
-        // Update tab badge count if needed
-        this.updateStarredTabBadge();
+        this.currentModal = null;
     }
     
-    updateStarButtons() {
-        const starButtons = document.querySelectorAll('.star-button');
-        starButtons.forEach(button => {
-            const index = parseInt(button.getAttribute('data-index'));
-            const isStarred = this.isStarred(index);
+    animateCards(container = null) {
+        const targetContainer = container || document.getElementById('marketplaceGrid');
+        if (!targetContainer) return;
+        
+        const cards = targetContainer.querySelectorAll('.reward-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
             
-            button.className = `star-button ${isStarred ? 'starred' : ''}`;
-            button.textContent = isStarred ? '⭐' : '☆';
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
         });
     }
     
-    renderStarredCards() {
-        if (!this.starredGrid) return;
-        
-        // Ensure rewards data is available
-        if (typeof rewards === 'undefined') {
-            setTimeout(() => this.renderStarredCards(), 100);
-            return;
-        }
-        
-        // Clear existing cards
-        this.starredGrid.innerHTML = '';
-        
-        if (this.starredItems.length === 0) {
-            // Show empty state
-            this.starredGrid.innerHTML = `
-                <div class="empty-starred">
-                    <div class="empty-icon">⭐</div>
-                    <h3>لا توجد مفضلة محفوظة</h3>
-                    <p>ابدأ بإضافة الأعمال الصالحة إلى مفضلتك من سوق الجنة</p>
-                    <button class="navigate-btn" onclick="window.tabSystem.switchTab('marketplace')">تصفح سوق الجنة</button>
-                </div>
-            `;
-        } else {
-            // Show starred cards
-            this.starredItems.forEach(index => {
-                if (rewards[index]) {
-                    const card = this.createCard(rewards[index], index);
-                    this.starredGrid.appendChild(card);
-                }
-            });
-        }
+    // Get reward by ID
+    getRewardById(id) {
+        return this.rewards.find(reward => reward.id === id);
     }
     
-    updateStarredTabBadge() {
-        const starredTab = document.querySelector('[data-tab="starred"]');
-        if (starredTab) {
-            const count = this.starredItems.length;
-            if (count > 0) {
-                starredTab.textContent = `المفضلة ⭐ (${count})`;
-            } else {
-                starredTab.textContent = 'المفضلة ⭐';
-            }
-        }
-    }
-    
-    setupModalEvents() {
-        // Close modal when clicking close button
-        this.modalClose.addEventListener('click', () => {
-            this.closeModal();
-        });
-        
-        // Close modal when clicking overlay
-        this.modalOverlay.addEventListener('click', (e) => {
-            if (e.target === this.modalOverlay) {
-                this.closeModal();
-            }
-        });
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.modalOverlay.classList.contains('active')) {
-                this.closeModal();
-            }
-        });
+    // Get random reward
+    getRandomReward() {
+        const randomIndex = Math.floor(Math.random() * this.rewards.length);
+        return this.rewards[randomIndex];
     }
 }
 
-// Initialize marketplace when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.marketplaceManager = new MarketplaceManager();
-});
+// Utility function to format Arabic numbers
+function formatArabicNumber(number) {
+    const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    return number.toString().replace(/\d/g, (digit) => arabicNumbers[parseInt(digit)]);
+}
+
+// Utility function to copy text to clipboard
+async function copyToClipboard(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+        console.log('Text copied to clipboard');
+        return true;
+    } catch (err) {
+        console.error('Failed to copy text: ', err);
+        return false;
+    }
+}
