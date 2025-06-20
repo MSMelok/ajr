@@ -1,5 +1,5 @@
 // Project Configuration
-const projectName = "سوق الجنة";
+const projectName = "أجر";
 
 // Initialize project title
 document.addEventListener('DOMContentLoaded', function() {
